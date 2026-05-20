@@ -1,0 +1,19 @@
+{
+    "semi": true,
+    "singleQuote": false,
+    "singleAttributePerLine": false,
+    "htmlWhitespaceSensitivity": "css",
+    "printWidth": 80,
+    "plugins": [
+        "prettier-plugin-tailwindcss"
+    ],
+    "tailwindFunctions": [
+        "clsx",
+        "cn",
+        "cva"
+    ],
+    "tailwindStylesheet": "src/css/main.css",
+    "tabWidth": 4,
+    "trailingComma": "es5",
+    "vueIndentScriptAndStyle": true
+}

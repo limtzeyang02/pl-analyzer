@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/vnd.microsoft.icon" href="favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>P&L Analyser</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 2rem;
+        border-radius: 1rem;
+        background: oklch(1 0 0);
+        color: oklch(0.141 0.005 285.823);
+        height: 100vh;
+        width: 100vw;
+        font-family: sans-serif;
+        font-weight: bold;
+      }
+
+      .status-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+      }
+
+      .bar-track {
+        display: none;
+        width: 250px;
+        height: 6px;
+        background: oklch(0.967 0.001 286.375);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+
+      .bar-fill {
+        height: 100%;
+        background: oklch(0.553 0.195 38.402);
+        border-radius: 3px;
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: oklch(0.141 0.005 285.823);
+          color: oklch(0.985 0 0);
+        }
+
+        .bar-track {
+          background: oklch(0.274 0.006 286.033);
+        }
+
+        .bar-fill {
+          background: oklch(0.47 0.157 37.304);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <img src="logo.png" width="100px">
+    <div class="status-container">
+      <span id="status"></span>
+      <div class="bar-track" id="bar-track">
+        <div class="bar-fill" id="bar"></div>
+      </div>
+    </div>
+
+    <script>
+      const barTrack = document.getElementById('bar-track');
+      const bar      = document.getElementById('bar');
+      const status   = document.getElementById('status');
+      const DOTS     = ['', '.', '..', '...'];
+      let dotsTimer  = null;
+
+      function startDots(base) {
+        stopDots();
+        let i = 0;
+        status.textContent = base;
+        dotsTimer = setInterval(() => {
+          i = (i + 1) % 4;
+          status.textContent = base + DOTS[i];
+        }, 500);
+      }
+
+      function stopDots() {
+        clearInterval(dotsTimer);
+        dotsTimer = null;
+      }
+
+      function setProgress(pct) {
+        bar.style.width = pct + '%';
+      }
+
+      // Begin animating immediately while Tauri initialises.
+      startDots('Checking for updates');
+
+      async function init() {
+        const { listen } = window.__TAURI__.event;
+        const { invoke } = window.__TAURI__.core;
+
+        await listen('update-status', async (event) => {
+          const { status: s, progress, message } = event.payload;
+
+          if (s === 'checking') {
+            barTrack.style.display = 'none';
+            startDots('Checking for updates');
+          } else if (s === 'retrying') {
+            barTrack.style.display = 'none';
+            stopDots();
+            status.textContent = message;
+          } else if (s === 'downloading') {
+            stopDots();
+            barTrack.style.display = 'block';
+            status.textContent = message;
+            if (progress != null) setProgress(progress);
+          } else if (s === 'installing') {
+            stopDots();
+            barTrack.style.display = 'block';
+            status.textContent = message;
+            setProgress(100);
+          } else if (s === 'up-to-date') {
+            barTrack.style.display = 'none';
+            startDots('Starting');
+            await invoke('finish_startup');
+          } else if (s === 'error') {
+            barTrack.style.display = 'none';
+            stopDots();
+            status.textContent = message;
+            await new Promise(r => setTimeout(r, 500));
+            startDots('Starting');
+            await invoke('finish_startup');
+          }
+        });
+
+        await invoke('start_update_check');
+      }
+
+      init();
+    </script>
+  </body>
+</html>

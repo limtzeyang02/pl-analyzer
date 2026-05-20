@@ -1,0 +1,68 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "pl-analyser",
+  "version": "3.0.0",
+  "identifier": "tylim241.pl-analyser",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "title": "P&L Analyser",
+        "label": "main",
+        "maximized": true,
+        "dragDropEnabled": false,
+        "visible": false
+      },
+      {
+        "title": "P&L Analyser",
+        "label": "splashscreen",
+        "width": 300,
+        "height": 350,
+        "center": true,
+        "resizable": false,
+        "decorations": false,
+        "transparent": true,
+        "url": "splashscreen.html"
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "msi",
+    "windows": {
+      "webviewInstallMode": {
+        "type": "offlineInstaller"
+      }
+    },
+    "publisher": "Lim Tze Yang",
+    "category": "Business",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "windows": {
+        "installMode": "passive"
+      },
+      "endpoints": [
+        "https://raw.githubusercontent.com/limtzeyang02/pl-analyzer/update/latest.json"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDJEN0JEQkVCRDYzMkQyMjgKUldRbzBqTFc2OXQ3TFVkOFJ5T1pMUzdCcFQ5VnY4RWpzTzFZSGJQNWIrNjIwdGVpTEFVckNRWUcK"
+    }
+  }
+}
