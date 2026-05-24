@@ -1,3 +1,4 @@
+pub mod startup;
 pub mod updater;
 
 #[tauri::command]

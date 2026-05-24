@@ -1,8 +1,8 @@
 <script setup lang="ts">
+    import { LoaderCircleIcon } from "@lucide/vue";
+    import { storeToRefs } from "pinia";
     import { nextTick } from "vue";
     import { useRouter } from "vue-router";
-    import { storeToRefs } from "pinia";
-    import { LoaderCircleIcon } from "@lucide/vue";
     import { useAppStateStore } from "./stores/appState";
 
     const router = useRouter();

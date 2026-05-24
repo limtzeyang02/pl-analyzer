@@ -1,27 +1,11 @@
 use std::sync::{
-    atomic::{AtomicBool, AtomicU64, Ordering},
+    atomic::{AtomicU64, Ordering},
     Arc,
 };
 
 use serde::Serialize;
-use tauri::{AppHandle, Emitter, Manager};
+use tauri::{AppHandle, Emitter};
 use tauri_plugin_updater::UpdaterExt;
-
-pub struct StartupState {
-    update_done: AtomicBool,
-    frontend_ready: AtomicBool,
-    started: AtomicBool,
-}
-
-impl StartupState {
-    pub fn new() -> Self {
-        Self {
-            update_done: AtomicBool::new(false),
-            frontend_ready: AtomicBool::new(false),
-            started: AtomicBool::new(false),
-        }
-    }
-}
 
 #[derive(Clone, Serialize)]
 struct UpdateStatus {
@@ -39,26 +23,6 @@ fn emit_status(app: &AppHandle, status: &str, progress: Option<f64>, message: &s
             message: message.into(),
         },
     );
-}
-
-fn start_app(app: &AppHandle) {
-    if let Some(splash) = app.get_webview_window("splashscreen") {
-        let _ = splash.close();
-    }
-    if let Some(main) = app.get_webview_window("main") {
-        let _ = main.show();
-        let _ = main.set_focus();
-    }
-}
-
-fn maybe_start_app(app: &AppHandle) {
-    let state = app.state::<StartupState>();
-    if state.update_done.load(Ordering::Acquire)
-        && state.frontend_ready.load(Ordering::Acquire)
-        && !state.started.swap(true, Ordering::AcqRel)
-    {
-        start_app(app);
-    }
 }
 
 async fn run_update_check(app: AppHandle) {
@@ -131,22 +95,4 @@ pub fn start_update_check(app: AppHandle) {
     tauri::async_runtime::spawn(async move {
         run_update_check(app).await;
     });
-}
-
-/// Called by the splash screen when the update check reaches a terminal state.
-#[tauri::command]
-pub fn finish_startup(app: AppHandle) {
-    app.state::<StartupState>()
-        .update_done
-        .store(true, Ordering::Release);
-    maybe_start_app(&app);
-}
-
-/// Called by the main window's frontend once Vue has mounted and is ready.
-#[tauri::command]
-pub fn close_splashscreen(app: AppHandle) {
-    app.state::<StartupState>()
-        .frontend_ready
-        .store(true, Ordering::Release);
-    maybe_start_app(&app);
 }

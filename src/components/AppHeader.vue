@@ -1,7 +1,9 @@
 <script setup lang="ts">
-    import { LayoutGridIcon, MenuIcon } from "@lucide/vue";
-    import { computed, ref } from "vue";
-    import AppLogoIcon from "@/components/AppLogoIcon.vue";
+    import { LayoutGridIcon, MenuIcon, MoonIcon, SunIcon } from "@lucide/vue";
+    import { storeToRefs } from "pinia";
+    import { computed } from "vue";
+    import AppLogo from "@/components/AppLogo.vue";
+    import Breadcrumbs from "@/components/Breadcrumbs.vue";
     import { Button } from "@/components/ui/button";
     import {
         NavigationMenu,
@@ -16,8 +18,7 @@
         SheetTitle,
         SheetTrigger,
     } from "@/components/ui/sheet";
-    import Breadcrumbs from "./Breadcrumbs.vue";
-    import { useCurrentUrl } from "@/composables/useCurrentUrl";
+    import { useAppStateStore } from "@/stores/appState";
     import type { BreadcrumbItem, NavItem } from "@/types";
 
     type Props = {
@@ -27,32 +28,26 @@
     const props = withDefaults(defineProps<Props>(), {
         breadcrumbs: () => [],
     });
-
-    const activeItemStyles =
-        "!bg-transparent text-neutral-900 dark:text-neutral-100";
-
-    const mobileActiveItemStyles =
-        "bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary";
-
+    const appStateStore = useAppStateStore();
+    const { toggleDark } = appStateStore;
+    const { isDark } = storeToRefs(appStateStore);
+    const activeItemStyles = "bg-transparent ";
     const mainNavItems = computed<NavItem[]>(() => [
         {
-            title: "test",
-            href: "",
+            title: "Home",
+            href: "/",
             icon: LayoutGridIcon,
         },
     ]);
-
-    const mobileMenuOpen = ref(false);
-    const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
 </script>
 
 <template>
-    <div>
-        <div class="border-b border-sidebar-border/80 lg:hidden">
+    <header>
+        <div class="border-b border-sidebar-border/80">
             <div class="mx-auto flex h-16 items-center px-4 md:max-w-7xl">
                 <!-- Mobile Menu -->
                 <div class="lg:hidden">
-                    <Sheet v-model:open="mobileMenuOpen">
+                    <Sheet>
                         <SheetTrigger :as-child="true">
                             <Button
                                 variant="ghost"
@@ -66,8 +61,10 @@
                             <SheetTitle class="sr-only">
                                 Navigation menu
                             </SheetTitle>
-                            <SheetHeader class="flex justify-start text-left">
-                                <AppLogoIcon class="h-12 w-auto self-start" />
+                            <SheetHeader
+                                class="flex-row items-center justify-center"
+                            >
+                                <AppLogo />
                             </SheetHeader>
                             <div
                                 class="flex h-full flex-1 flex-col justify-between space-y-4 py-6"
@@ -78,13 +75,7 @@
                                         :key="item.title"
                                         :to="item.href"
                                         class="flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent"
-                                        :class="
-                                            whenCurrentUrl(
-                                                item.href,
-                                                mobileActiveItemStyles
-                                            )
-                                        "
-                                        @click="mobileMenuOpen = false"
+                                        :exact-active-class="activeItemStyles"
                                     >
                                         <component
                                             v-if="item.icon"
@@ -99,9 +90,18 @@
                     </Sheet>
                 </div>
 
-                <RouterLink to="/">
-                    <AppLogoIcon class="h-8 w-auto" />
+                <RouterLink to="/" class="flex items-center gap-x-2">
+                    <AppLogo />
                 </RouterLink>
+
+                <Button
+                    size="icon"
+                    variant="outline"
+                    class="ml-auto lg:hidden"
+                    @click="toggleDark()"
+                >
+                    <component :is="isDark ? MoonIcon : SunIcon" />
+                </Button>
 
                 <!-- Desktop Menu -->
                 <div class="hidden h-full lg:flex lg:flex-1">
@@ -115,31 +115,43 @@
                                 class="relative flex h-full items-center"
                             >
                                 <RouterLink
-                                    :class="[
-                                        navigationMenuTriggerStyle(),
-                                        whenCurrentUrl(
-                                            item.href,
-                                            activeItemStyles
-                                        ),
-                                        'h-9 cursor-pointer px-3',
-                                    ]"
+                                    v-slot="{ isExactActive, href, navigate }"
                                     :to="item.href"
+                                    custom
                                 >
-                                    <component
-                                        v-if="item.icon"
-                                        :is="item.icon"
-                                        class="mr-2 size-4"
-                                    />
-                                    {{ item.title }}
+                                    <a
+                                        :href="href"
+                                        :class="[
+                                            navigationMenuTriggerStyle(),
+                                            isExactActive && activeItemStyles,
+                                            'h-9 cursor-pointer px-3',
+                                        ]"
+                                        @click="navigate"
+                                    >
+                                        <component
+                                            v-if="item.icon"
+                                            :is="item.icon"
+                                            class="mr-2 size-4"
+                                        />
+                                        {{ item.title }}
+                                    </a>
+                                    <div
+                                        v-if="isExactActive"
+                                        class="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-primary"
+                                    ></div>
                                 </RouterLink>
-                                <div
-                                    v-if="isCurrentUrl(item.href)"
-                                    class="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-primary"
-                                ></div>
                             </NavigationMenuItem>
                         </NavigationMenuList>
                     </NavigationMenu>
                 </div>
+                <Button
+                    size="icon"
+                    variant="outline"
+                    class="hidden lg:flex"
+                    @click="toggleDark()"
+                >
+                    <component :is="isDark ? MoonIcon : SunIcon" />
+                </Button>
             </div>
         </div>
 
@@ -153,5 +165,5 @@
                 <Breadcrumbs :breadcrumbs />
             </div>
         </div>
-    </div>
+    </header>
 </template>

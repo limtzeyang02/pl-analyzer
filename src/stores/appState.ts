@@ -1,6 +1,6 @@
 import { getVersion } from "@tauri-apps/api/app";
-import { defineStore } from "pinia";
 import { computedAsync, useDark, useToggle } from "@vueuse/core";
+import { defineStore } from "pinia";
 import { shallowRef } from "vue";
 
 export const useAppStateStore = defineStore("app_state", () => {

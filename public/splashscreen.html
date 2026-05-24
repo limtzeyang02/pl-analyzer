@@ -100,7 +100,6 @@
         bar.style.width = pct + '%';
       }
 
-      // Begin animating immediately while Tauri initialises.
       startDots('Checking for updates');
 
       async function init() {
@@ -130,14 +129,14 @@
           } else if (s === 'up-to-date') {
             barTrack.style.display = 'none';
             startDots('Starting');
-            await invoke('finish_startup');
+            await invoke('finish_splashscreen');
           } else if (s === 'error') {
             barTrack.style.display = 'none';
             stopDots();
             status.textContent = message;
             await new Promise(r => setTimeout(r, 500));
             startDots('Starting');
-            await invoke('finish_startup');
+            await invoke('finish_splashscreen');
           }
         });
 

@@ -81,7 +81,8 @@ pub fn run() {
     ];
 
     tauri::Builder::default()
-        .manage(commands::updater::StartupState::new())
+        .plugin(tauri_plugin_sql::Builder::new().build())
+        .manage(commands::startup::StartupState::new())
         .plugin(tauri_plugin_single_instance::init(|_app, _args, _cwd| {}))
         .plugin(
             tauri_plugin_sql::Builder::new()
@@ -95,8 +96,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             commands::greet,
             commands::updater::start_update_check,
-            commands::updater::finish_startup,
-            commands::updater::close_splashscreen,
+            commands::startup::finish_splashscreen,
+            commands::startup::finish_frontend,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
