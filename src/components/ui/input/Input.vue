@@ -1,33 +1,31 @@
 <script setup lang="ts">
-    import type { HTMLAttributes } from "vue";
-    import { useVModel } from "@vueuse/core";
-    import { cn } from "@/lib/utils";
+import type { HTMLAttributes } from "vue"
+import { useVModel } from "@vueuse/core"
+import { cn } from "@/lib/utils"
 
-    const props = defineProps<{
-        defaultValue?: string | number;
-        modelValue?: string | number;
-        class?: HTMLAttributes["class"];
-    }>();
+const props = defineProps<{
+  defaultValue?: string | number
+  modelValue?: string | number
+  class?: HTMLAttributes["class"]
+}>()
 
-    const emits = defineEmits<{
-        (e: "update:modelValue", payload: string | number): void;
-    }>();
+const emits = defineEmits<{
+  (e: "update:modelValue", payload: string | number): void
+}>()
 
-    const modelValue = useVModel(props, "modelValue", emits, {
-        passive: true,
-        defaultValue: props.defaultValue,
-    });
+const modelValue = useVModel(props, "modelValue", emits, {
+  passive: true,
+  defaultValue: props.defaultValue,
+})
 </script>
 
 <template>
-    <input
-        v-model="modelValue"
-        data-slot="input"
-        :class="
-            cn(
-                'h-9 w-full min-w-0 rounded-3xl border border-transparent bg-input/50 px-3 py-1 text-base transition-[color,box-shadow,background-color] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
-                props.class
-            )
-        "
-    />
+  <input
+    v-model="modelValue"
+    data-slot="input"
+    :class="cn(
+      'bg-input/50 border-transparent focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 h-9 rounded-3xl border px-3 py-1 text-base transition-[color,box-shadow,background-color] file:h-7 file:text-sm file:font-medium focus-visible:ring-3 aria-invalid:ring-3 md:text-sm w-full min-w-0 outline-none file:inline-flex file:border-0 file:bg-transparent file:text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
+      props.class,
+    )"
+  >
 </template>

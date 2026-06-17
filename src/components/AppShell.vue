@@ -1,7 +1,9 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+    import { SidebarProvider } from "@/components/ui/sidebar";
+</script>
 
 <template>
-    <div class="grid min-h-screen w-full grid-cols-1 grid-rows-[auto_1fr_auto]">
+    <SidebarProvider>
         <slot></slot>
-    </div>
+    </SidebarProvider>
 </template>

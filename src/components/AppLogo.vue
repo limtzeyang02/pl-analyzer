@@ -3,6 +3,8 @@
 </script>
 
 <template>
-    <AppLogoIcon class="size-8" />
-    <span class="leading-tight font-semibold"> P&L Analyser </span>
+    <div class="flex items-center justify-center gap-2">
+        <AppLogoIcon class="size-8" />
+        <span class="leading-tight font-semibold"> P&L Analyser </span>
+    </div>
 </template>

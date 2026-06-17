@@ -10,59 +10,36 @@ const router = createRouter({
             children: [
                 {
                     path: "/",
-                    name: "Home",
-                    component: () => import("@/pages/HomePage.vue"),
+                    name: "Overview",
+                    component: () => import("@/pages/OverviewPage.vue"),
                 },
-                // {
-                //     path: "/manage",
-                //     children: [
-                //         {
-                //             path: "categories",
-                //             name: "Manage Categories",
-                //             component: () =>
-                //                 import("@/views/manage/Categories.vue"),
-                //         },
-                //         {
-                //             path: "items/purchases",
-                //             name: "Manage Items - Purchases",
-                //             component: () =>
-                //                 import("@/views/manage/items/Purchases.vue"),
-                //         },
-                //         {
-                //             path: "items/sales",
-                //             name: "Manage Items - Sales",
-                //             component: () =>
-                //                 import("@/views/manage/items/Sales.vue"),
-                //         },
-                //     ],
-                // },
-                // {
-                //     path: "/transactions",
-                //     children: [
-                //         {
-                //             path: "purchases",
-                //             name: "Purchases",
-                //             component: () =>
-                //                 import("@/views/transactions/Purchases.vue"),
-                //         },
-                //         {
-                //             path: "sales",
-                //             name: "Sales",
-                //             component: () =>
-                //                 import("@/views/transactions/Sales.vue"),
-                //         },
-                //     ],
-                // },
-                // {
-                //     path: "/cash-flow",
-                //     name: "Cash Flow",
-                //     component: () => import("@/views/CashFlow.vue"),
-                // },
-                // {
-                //     path: "/analysis",
-                //     name: "Analysis",
-                //     component: () => import("@/views/Analysis.vue"),
-                // },
+                {
+                    path: "/transactions/:type(purchases|sales)",
+                    name: "Transactions",
+                    component: () => import("@/pages/TransactionsPage.vue"),
+                    props: true,
+                },
+                {
+                    path: "/cash-flow",
+                    name: "Cash Flow",
+                    component: () => import("@/pages/CashFlowPage.vue"),
+                },
+                {
+                    path: "/analysis",
+                    name: "Analysis",
+                    component: () => import("@/pages/AnalysisPage.vue"),
+                },
+                {
+                    path: "/items/:type(purchases|sales)",
+                    name: "Items",
+                    component: () => import("@/pages/ItemsPage.vue"),
+                    props: true,
+                },
+                {
+                    path: "/categories",
+                    name: "Categories",
+                    component: () => import("@/pages/CategoriesPage.vue"),
+                },
             ],
         },
     ],
